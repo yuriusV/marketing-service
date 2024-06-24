@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Campaign.Infrastructure.Services.Http.CustomerApi;
 
-namespace Campaign.Infrastructure.Services.Http.CustomerApi
+public class CustomerApiSettings : HttpClientSettings
 {
-    public class CustomerApiSettings : HttpClientSettings
-    {
-    }
 }

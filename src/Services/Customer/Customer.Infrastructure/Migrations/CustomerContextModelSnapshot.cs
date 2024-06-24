@@ -8,65 +8,64 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Customer.Infrastructure.Migrations
+namespace Customer.Infrastructure.Migrations;
+
+[DbContext(typeof(CustomerContext))]
+partial class CustomerContextModelSnapshot : ModelSnapshot
 {
-    [DbContext(typeof(CustomerContext))]
-    partial class CustomerContextModelSnapshot : ModelSnapshot
+    protected override void BuildModel(ModelBuilder modelBuilder)
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+        modelBuilder
+            .HasAnnotation("ProductVersion", "8.0.6")
+            .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+        NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Customer.Domain.Entities.Customer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
+        modelBuilder.Entity("Customer.Domain.Entities.Customer", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid")
+                    .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<DateTime>("Birthdate")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("Birthdate")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                b.Property<string>("City")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("Deposit")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal>("Deposit")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<bool>("IsMale")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsMale")
+                    .HasColumnType("boolean");
 
-                    b.Property<bool>("IsNewCustomer")
-                        .HasColumnType("boolean");
+                b.Property<bool>("IsNewCustomer")
+                    .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastModifiedDate")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime?>("LastModifiedDate")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Birthdate");
+                b.HasIndex("Birthdate");
 
-                    b.HasIndex("City");
+                b.HasIndex("City");
 
-                    b.HasIndex("Deposit");
+                b.HasIndex("Deposit");
 
-                    b.HasIndex("IsMale");
+                b.HasIndex("IsMale");
 
-                    b.HasIndex("IsNewCustomer");
+                b.HasIndex("IsNewCustomer");
 
-                    b.ToTable("Customers");
-                });
+                b.ToTable("Customers");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

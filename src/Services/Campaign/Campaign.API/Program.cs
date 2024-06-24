@@ -1,19 +1,12 @@
 using Common.Logging;
 using Campaign.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Campaign.Application;
 using Campaign.Infrastructure;
-using Campaign.Application.Mappings;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Campaign.API.Extensions;
-using Campaign.Infrastructure.Services.Http;
-using System.Configuration;
 using Campaign.Infrastructure.Services.Http.CustomerApi;
 using Campaign.Infrastructure.Services.Http.NotificationApi;
 

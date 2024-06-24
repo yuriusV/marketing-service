@@ -3,26 +3,25 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Notification.Application.Features.Notifications.Commands.CreateNotification
+namespace Notification.Application.Features.Notifications.Commands.CreateNotification;
+
+public class CreateNotificationHandler : IRequestHandler<CreateNotificationCommand, CreateNotificationResponse>
 {
-    public class CreateNotificationHandler : IRequestHandler<CreateNotificationCommand, CreateNotificationResponse>
+    private readonly INotificationRepository _NotificationRepository;
+    private readonly IMapper _mapper;
+    private readonly ILogger<CreateNotificationHandler> _logger;
+
+    public CreateNotificationHandler(INotificationRepository NotificationRepository, IMapper mapper, ILogger<CreateNotificationHandler> logger)
     {
-        private readonly INotificationRepository _NotificationRepository;
-        private readonly IMapper _mapper;
-        private readonly ILogger<CreateNotificationHandler> _logger;
+        _NotificationRepository = NotificationRepository;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
-        public CreateNotificationHandler(INotificationRepository NotificationRepository, IMapper mapper, ILogger<CreateNotificationHandler> logger)
-        {
-            _NotificationRepository = NotificationRepository;
-            _mapper = mapper;
-            _logger = logger;
-        }
-
-        public async Task<CreateNotificationResponse> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
-        {
-            var NotificationEntity = _mapper.Map<Domain.Entities.Notification>(request);
-            var newNotification = await _NotificationRepository.CreateNotificationAsync(NotificationEntity!);
-            return new CreateNotificationResponse { StreamItemId = newNotification };
-        }
+    public async Task<CreateNotificationResponse> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
+    {
+        var NotificationEntity = _mapper.Map<Domain.Entities.Notification>(request);
+        var newNotification = await _NotificationRepository.CreateNotificationAsync(NotificationEntity!);
+        return new CreateNotificationResponse { StreamItemId = newNotification };
     }
 }

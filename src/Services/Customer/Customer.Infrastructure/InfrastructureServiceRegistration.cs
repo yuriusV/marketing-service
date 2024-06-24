@@ -4,27 +4,21 @@ using Customer.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Customer.Infrastructure
+namespace Customer.Infrastructure;
+
+public static class InfrastructureServiceRegistration
 {
-    public static class InfrastructureServiceRegistration
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        services.AddDbContext<CustomerContext>(options =>
         {
-            services.AddDbContext<CustomerContext>(options =>
-            {
-                options.UseNpgsql(configuration.GetConnectionString("CustomerConnectionString"));
-            });
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
-            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            options.UseNpgsql(configuration.GetConnectionString("CustomerConnectionString"));
+        });
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
 
-            return services;
-        }
+        return services;
     }
 }

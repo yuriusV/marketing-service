@@ -103,11 +103,12 @@ services:
     ports:
       - "7002:8080"
     volumes:
-      - notifications:/home
+      - notifications:/tmp
 
 volumes:
   postgres_data_customer:
   postgres_data_campaign:
+  notifications:
   pgadmin_data:
 
 

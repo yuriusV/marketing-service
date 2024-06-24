@@ -1,9 +1,7 @@
-﻿using Campaign.Application.Features.Templates.Queries.GetTemplates;
-using MediatR;
+﻿using MediatR;
 
-namespace Campaign.Application.Features.Templates.Queries.GetTemplates
+namespace Campaign.Application.Features.Templates.Queries.GetTemplates;
+
+public class TemplateQuery : IRequest<IReadOnlyList<TemplateDto>>
 {
-    public class TemplateQuery : IRequest<IReadOnlyList<TemplateDto>>
-    {
-    }
 }

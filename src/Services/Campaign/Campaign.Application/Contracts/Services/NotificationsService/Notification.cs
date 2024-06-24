@@ -1,9 +1,8 @@
-﻿namespace Campaign.Application.Contracts.Services.NotificationsService
-{
-    public class Notification
-    {
-        public Guid TargetId { get; set; }
+﻿namespace Campaign.Application.Contracts.Services.NotificationsService;
 
-        public string Contents { get; set; }
-    }
+public class Notification
+{
+    public Guid TargetId { get; set; }
+
+    public string Contents { get; set; }
 }

@@ -1,22 +1,16 @@
 ﻿
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Notification.Application.Features.Notifications.Commands.CreateNotification
+namespace Notification.Application.Features.Notifications.Commands.CreateNotification;
+
+public class CreateNotificationValidator : AbstractValidator<CreateNotificationCommand>
 {
-    public class CreateNotificationValidator : AbstractValidator<CreateNotificationCommand>
+    public CreateNotificationValidator()
     {
-        public CreateNotificationValidator()
-        {
-            RuleFor(x => x.TargetId)
-                .NotEqual(Guid.Empty);
+        RuleFor(x => x.TargetId)
+            .NotEqual(Guid.Empty);
 
-            RuleFor(x => x.Contents)
-                .NotEmpty();
-        }
+        RuleFor(x => x.Contents)
+            .NotEmpty();
     }
 }

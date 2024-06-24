@@ -1,7 +1,6 @@
-﻿namespace Notification.Infrastructure.Repositories
+﻿namespace Notification.Infrastructure.Repositories;
+
+public class FileSettings
 {
-    public class FileSettings
-    {
-        public string FilePath { get; set; }
-    }
+    public string FilePath { get; set; }
 }

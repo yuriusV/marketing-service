@@ -12,33 +12,32 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 
-namespace Campaign.Infrastructure
+namespace Campaign.Infrastructure;
+
+public static class InfrastructureServiceRegistration
 {
-    public static class InfrastructureServiceRegistration
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        services.AddDbContext<CampaignContext>(options =>
         {
-            services.AddDbContext<CampaignContext>(options =>
-            {
-                options.UseNpgsql(configuration.GetConnectionString("CampaignConnectionString"));
-            });
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
-            services.AddScoped<ICampaignRepository, CampaignRepository>();
-            services.AddScoped<ITemplateRepository, TemplateRepository>();
+            options.UseNpgsql(configuration.GetConnectionString("CampaignConnectionString"));
+        });
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
+        services.AddScoped<ICampaignRepository, CampaignRepository>();
+        services.AddScoped<ITemplateRepository, TemplateRepository>();
 
-            services.AddQuartz(q =>
-            {
-                q.UseMicrosoftDependencyInjectionJobFactory();
-            });
+        services.AddQuartz(q =>
+        {
+            q.UseMicrosoftDependencyInjectionJobFactory();
+        });
 
-            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-            services.AddSingleton<ISchedulerService, SchedulerService>();
-            services.AddTransient<ICustomersService, CustomersService>();
-            services.AddTransient<INotificationsService, NotificationService>();
+        services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+        services.AddSingleton<ISchedulerService, SchedulerService>();
+        services.AddTransient<ICustomersService, CustomersService>();
+        services.AddTransient<INotificationsService, NotificationService>();
 
 
-            return services;
-        }
+        return services;
     }
 }

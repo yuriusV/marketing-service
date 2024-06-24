@@ -2,109 +2,103 @@
 using Campaign.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Campaign.Infrastructure.Persistence
+namespace Campaign.Infrastructure.Persistence;
+
+public class CampaignContextFactory : IDesignTimeDbContextFactory<CampaignContext>
 {
-    public class CampaignContextFactory : IDesignTimeDbContextFactory<CampaignContext>
+    public CampaignContext CreateDbContext(string[] args)
     {
-        public CampaignContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<CampaignContext>();
-            optionsBuilder.UseNpgsql();
+        var optionsBuilder = new DbContextOptionsBuilder<CampaignContext>();
+        optionsBuilder.UseNpgsql();
 
-            return new CampaignContext(optionsBuilder.Options);
-        }
+        return new CampaignContext(optionsBuilder.Options);
+    }
+}
+
+public class CampaignContext : DbContext
+{
+    public CampaignContext(DbContextOptions<CampaignContext> options) : base(options)
+    {
     }
 
-    public class CampaignContext : DbContext
+    public DbSet<Domain.Entities.Campaign> Campaigns { get; set; }
+
+    public DbSet<Template> Templates { get; set; }
+
+    public DbSet<CampaignActivity> Activities { get; set; }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
-        public CampaignContext(DbContextOptions<CampaignContext> options) : base(options)
+        foreach (var entry in ChangeTracker.Entries<EntityBase>())
         {
-        }
-
-        public DbSet<Domain.Entities.Campaign> Campaigns { get; set; }
-
-        public DbSet<Template> Templates { get; set; }
-
-        public DbSet<CampaignActivity> Activities { get; set; }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-        {
-            foreach (var entry in ChangeTracker.Entries<EntityBase>())
+            switch (entry.State)
             {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedDate = DateTime.Now;
-                        break;
-                    case EntityState.Modified:
-                        entry.Entity.LastModifiedDate = DateTime.Now;
-                        break;
-                }
+                case EntityState.Added:
+                    entry.Entity.CreatedDate = DateTime.Now;
+                    break;
+                case EntityState.Modified:
+                    entry.Entity.LastModifiedDate = DateTime.Now;
+                    break;
             }
-            return base.SaveChangesAsync(cancellationToken);
         }
+        return base.SaveChangesAsync(cancellationToken);
+    }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Domain.Entities.Campaign>(entity =>
         {
-            modelBuilder.Entity<Domain.Entities.Campaign>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id)
-                      .HasDefaultValueSql("gen_random_uuid()")
-                      .ValueGeneratedOnAdd();
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id)
+                  .HasDefaultValueSql("gen_random_uuid()")
+                  .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Name)
-                      .IsRequired();
+            entity.Property(e => e.Name)
+                  .IsRequired();
 
-                entity.Property(e => e.Query)
-                      .HasColumnType("jsonb");
+            entity.Property(e => e.Query)
+                  .HasColumnType("jsonb");
 
-                entity.Property(e => e.Time)
-                      .HasColumnType("time");
+            entity.Property(e => e.Time)
+                  .HasColumnType("time");
 
-                entity.Property(e => e.Priority)
-                      .IsRequired();
+            entity.Property(e => e.Priority)
+                  .IsRequired();
 
-                entity.HasOne(e => e.Template)
-                      .WithMany()
-                      .HasForeignKey(e => e.TemplateId)
-                      .IsRequired();
-            });
+            entity.HasOne(e => e.Template)
+                  .WithMany()
+                  .HasForeignKey(e => e.TemplateId)
+                  .IsRequired();
+        });
 
-            modelBuilder.Entity<Template>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id)
-                      .HasDefaultValueSql("gen_random_uuid()")
-                      .ValueGeneratedOnAdd();
+        modelBuilder.Entity<Template>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id)
+                  .HasDefaultValueSql("gen_random_uuid()")
+                  .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Name)
-                      .IsRequired();
+            entity.Property(e => e.Name)
+                  .IsRequired();
 
-                entity.Property(e => e.Contents)
-                      .HasColumnType("bytea");
-            });
+            entity.Property(e => e.Contents)
+                  .HasColumnType("bytea");
+        });
 
-            modelBuilder.Entity<CampaignActivity>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id)
-                      .HasDefaultValueSql("gen_random_uuid()")
-                      .ValueGeneratedOnAdd();
+        modelBuilder.Entity<CampaignActivity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id)
+                  .HasDefaultValueSql("gen_random_uuid()")
+                  .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.TargetId)
-                      .IsRequired();
+            entity.Property(e => e.TargetId)
+                  .IsRequired();
 
-                entity.HasIndex(e => new { e.TargetId, e.CreatedDate });
-            });
+            entity.HasIndex(e => new { e.TargetId, e.CreatedDate });
+        });
 
-            base.OnModelCreating(modelBuilder);
-        }
+        base.OnModelCreating(modelBuilder);
     }
 }

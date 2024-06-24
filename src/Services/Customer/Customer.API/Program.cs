@@ -1,13 +1,8 @@
 using Common.Logging;
 using Customer.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Customer.Application;
 using Customer.Infrastructure;
-using Customer.Application.Mappings;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
