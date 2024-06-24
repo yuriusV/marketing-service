@@ -1,0 +1,46 @@
+version: '3.4'
+
+services:
+  customerdb:
+    image: postgres
+
+  campaigndb:
+    image: postgres
+
+  pgadmin:
+    image: dpage/pgadmin4  
+
+  notification.api:
+    image: ${DOCKER_REGISTRY-}notificationapi
+    build:
+      context: .
+      dockerfile: Services/Notification/Notification.API/Dockerfile
+
+  campaign.api:
+    image: ${DOCKER_REGISTRY-}campaignapi
+    build:
+      context: .
+      dockerfile: Services/Campaign/Campaign.API/Dockerfile
+
+  customer.api:
+    image: ${DOCKER_REGISTRY-}customerapi
+    build:
+      context: .
+      dockerfile: Services/Customer/Customer.API/Dockerfile
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+
+  webstatus:
+    image: ${DOCKER_REGISTRY-}webstatus
+    build:
+      context: .
+      dockerfile: WebApps/WebStatus/Dockerfile
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  elasticsearch-data:
