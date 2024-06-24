@@ -1,15 +1,10 @@
-﻿using Campaign.Application.Features.Campaigns.Queries.GetCampaigns;
+﻿using Campaign.Application.Contracts.Services;
 using Campaign.Infrastructure.Services.Quartz;
 using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Campaign.Infrastructure.Services
 {
-    public class SchedulerService
+    public class SchedulerService: ISchedulerService
     {
         private readonly ISchedulerFactory _schedulerFactory;
 
@@ -18,45 +13,47 @@ namespace Campaign.Infrastructure.Services
             _schedulerFactory = schedulerFactory;
         }
 
-        public async Task AddCampaign(CampaignDto campaign)
+        public async Task AddCampaignAsync(Domain.Entities.Campaign campaign)
         {
-            //var scheduler = await _schedulerFactory.GetScheduler();
+            var scheduler = await _schedulerFactory.GetScheduler();
 
-            //var job = JobBuilder.Create<DailyJob>()
-            //                    .WithIdentity(campaign.Id.ToString(), "Campaigns")
-            //                    .Build();
+            var job = JobBuilder.Create<DailyJob>()
+                .WithIdentity(campaign.Id.ToString(), "Campaigns")
+                .Build();
 
-            //var trigger = TriggerBuilder.Create()
-            //                            .WithIdentity(campaign.Id.ToString(), "Campaigns")
-            //                            .StartNow()
-            //                            .WithCronSchedule($"0 {campaign.Time.Minute} {campaign.Time.Hour} * * ?")
-            //                            .Build();
+            var trigger = TriggerBuilder.Create()
+                .WithIdentity(campaign.Id.ToString(), "Campaigns")
+                .StartNow()
+                .WithCronSchedule($"0 {campaign.Time.Minutes} {campaign.Time.Hours} * * ?")
+                .Build();
 
-            //await scheduler.ScheduleJob(job, trigger);
+            await scheduler.ScheduleJob(job, trigger);
         }
 
-        public async Task UpdateCampaign(Guid id, CampaignDto campaign)
+        public async Task UpdateCampaignAsync(Domain.Entities.Campaign campaign)
         {
-            //var scheduler = await _schedulerFactory.GetScheduler();
-            //var jobKey = new JobKey(id.ToString(), "Campaigns");
-            //var triggerKey = new TriggerKey(id.ToString(), "Campaigns");
+            Guid id = campaign.Id;
 
-            //await scheduler.DeleteJob(jobKey);
+            var scheduler = await _schedulerFactory.GetScheduler();
+            var jobKey = new JobKey(id.ToString(), "Campaigns");
+            var triggerKey = new TriggerKey(id.ToString(), "Campaigns");
 
-            //var job = JobBuilder.Create<DailyJob>()
-            //                    .WithIdentity(id.ToString(), "Campaigns")
-            //                    .Build();
+            await scheduler.DeleteJob(jobKey);
 
-            //var trigger = TriggerBuilder.Create()
-            //                            .WithIdentity(id.ToString(), "Campaigns")
-            //                            .StartNow()
-            //                            .WithCronSchedule($"0 {campaign.Time.Minute} {campaign.Time.Hour} * * ?")
-            //                            .Build();
+            var job = JobBuilder.Create<DailyJob>()
+                .WithIdentity(id.ToString(), "Campaigns")
+                .Build();
 
-            //await scheduler.ScheduleJob(job, trigger);
+            var trigger = TriggerBuilder.Create()
+                .WithIdentity(id.ToString(), "Campaigns")
+                .StartNow()
+                .WithCronSchedule($"0 {campaign.Time.Minutes} {campaign.Time.Hours} * * ?")
+                .Build();
+
+            await scheduler.ScheduleJob(job, trigger);
         }
 
-        public async Task DeleteCampaign(Guid id)
+        public async Task DeleteCampaignAsync(Guid id)
         {
             var scheduler = await _schedulerFactory.GetScheduler();
             var jobKey = new JobKey(id.ToString(), "Campaigns");

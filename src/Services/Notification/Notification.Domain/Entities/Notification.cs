@@ -13,14 +13,8 @@ namespace Notification.Domain.Entities
         {
 
         }
-        public Notification(Guid id, Guid customerId, decimal balance)
-        {
-            Id = id;
-            CustomerId = customerId;
-            Balance = balance;
-        }
 
-        public Guid CustomerId { get; set; }
-        public decimal Balance { get; set; }
+        public Guid TargetId { get; set; }
+        public string Contents { get; set; }
     }
 }

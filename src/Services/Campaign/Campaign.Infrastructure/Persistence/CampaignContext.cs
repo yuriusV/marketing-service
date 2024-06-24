@@ -1,6 +1,7 @@
 ﻿using Campaign.Domain.Common;
 using Campaign.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,17 @@ using System.Threading.Tasks;
 
 namespace Campaign.Infrastructure.Persistence
 {
+    public class CampaignContextFactory : IDesignTimeDbContextFactory<CampaignContext>
+    {
+        public CampaignContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<CampaignContext>();
+            optionsBuilder.UseNpgsql();
+
+            return new CampaignContext(optionsBuilder.Options);
+        }
+    }
+
     public class CampaignContext : DbContext
     {
         public CampaignContext(DbContextOptions<CampaignContext> options) : base(options)
@@ -18,6 +30,8 @@ namespace Campaign.Infrastructure.Persistence
         public DbSet<Domain.Entities.Campaign> Campaigns { get; set; }
 
         public DbSet<Template> Templates { get; set; }
+
+        public DbSet<CampaignActivity> Activities { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -41,6 +55,9 @@ namespace Campaign.Infrastructure.Persistence
             modelBuilder.Entity<Domain.Entities.Campaign>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                      .HasDefaultValueSql("gen_random_uuid()")
+                      .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name)
                       .IsRequired();
@@ -63,12 +80,28 @@ namespace Campaign.Infrastructure.Persistence
             modelBuilder.Entity<Template>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                      .HasDefaultValueSql("gen_random_uuid()")
+                      .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name)
                       .IsRequired();
 
                 entity.Property(e => e.Contents)
                       .HasColumnType("bytea");
+            });
+
+            modelBuilder.Entity<CampaignActivity>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                      .HasDefaultValueSql("gen_random_uuid()")
+                      .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.TargetId)
+                      .IsRequired();
+
+                entity.HasIndex(e => new { e.TargetId, e.CreatedDate });
             });
 
             base.OnModelCreating(modelBuilder);

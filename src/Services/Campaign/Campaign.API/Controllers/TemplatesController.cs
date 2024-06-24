@@ -36,9 +36,9 @@ namespace Customer.API.Controllers
         [ProducesResponseType(typeof(CampaignDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> CreateTemplate([FromBody] CreateTemplateCommand command)
+        public async Task<ActionResult> CreateTemplate([FromBody] CreateTemplateCommand data)
         {
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(data);
             return Ok(result);
         }
 

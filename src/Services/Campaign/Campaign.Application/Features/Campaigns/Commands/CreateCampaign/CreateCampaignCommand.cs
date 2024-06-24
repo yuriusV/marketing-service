@@ -9,7 +9,7 @@ namespace Campaign.Application.Features.Campaigns.Commands.CreateCampaign
 
         public string? Query { get; set; }
 
-        public TimeSpan? Time { get; set; }
+        public string? Time { get; set; }
 
         public int? Priority { get; set; }
 

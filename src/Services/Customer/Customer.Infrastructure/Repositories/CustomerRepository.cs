@@ -23,15 +23,71 @@ namespace Customer.Infrastructure.Repositories
                 .AnyAsync(predicate);
         }
 
-        public Task<IReadOnlyList<Domain.Entities.Customer>> FindAsync(CustomerDto properties)
+        public Task<IReadOnlyList<Domain.Entities.Customer>> FindAsync(CustomerQuery properties)
         {
-            return GetAsync(x => 
-                (properties.IsMale == null || x.IsMale == properties.IsMale)
-                && (properties.Id == null || x.Id == properties.Id)
-                && (properties.IsNewCustomer == null || x.IsNewCustomer == properties.IsNewCustomer)
-                 && (properties.City == null || x.City == properties.City)
-                  && (properties.Deposit == null || x.Deposit == properties.Deposit)
-                   && (properties.Birthdate == null || x.Birthdate == properties.Birthdate));
+            var parameter = Expression.Parameter(typeof(Domain.Entities.Customer), "x");
+
+            Expression filterExpression = Expression.Constant(true);
+
+            BinaryExpression GetExpression(string column, string filter, object value)
+            {
+                var prop = Expression.Property(parameter, column);
+                var constant = Expression.Constant(value);
+
+                return filter switch
+                {
+                    "=" => Expression.Equal(prop, constant),
+                    ">" => Expression.GreaterThan(prop, constant),
+                    "<" => Expression.LessThan(prop, constant),
+                    _ => throw new ArgumentException("Unsupported function name")
+                };
+            }
+
+            if (properties.Id != null)
+            {
+                filterExpression = Expression.AndAlso(
+                    filterExpression,
+                    GetExpression(nameof(properties.Id), properties.Id.Function, Guid.Parse(properties.Id.Value)));
+            }
+
+            if (properties.IsMale != null)
+            {
+                filterExpression = Expression.AndAlso(
+                    filterExpression,
+                    GetExpression(nameof(properties.IsMale), properties.IsMale.Function, bool.Parse(properties.IsMale.Value)));
+            }
+
+            if (properties.IsNewCustomer != null)
+            {
+                filterExpression = Expression.AndAlso(
+                    filterExpression,
+                    GetExpression(nameof(properties.IsNewCustomer), properties.IsNewCustomer.Function, bool.Parse(properties.IsNewCustomer.Value)));
+            }
+
+            if (properties.City != null)
+            {
+                filterExpression = Expression.AndAlso(
+                    filterExpression,
+                    GetExpression(nameof(properties.City), properties.City.Function, properties.City.Value));
+            }
+
+            if (properties.Birthdate != null)
+            {
+                filterExpression = Expression.AndAlso(
+                    filterExpression,
+                    GetExpression(nameof(properties.Birthdate), properties.Birthdate.Function, DateTime.Parse(properties.Birthdate.Value)));
+            }
+
+            if (properties.Deposit != null)
+            {
+                filterExpression = Expression.AndAlso(
+                    filterExpression,
+                    GetExpression(nameof(properties.Deposit), properties.Deposit.Function, decimal.Parse(properties.Deposit.Value)));
+            }
+
+            var lambda = Expression.Lambda<Func<Domain.Entities.Customer, bool>>(filterExpression, parameter);
+
+            return GetAsync(lambda);
         }
     }
 }

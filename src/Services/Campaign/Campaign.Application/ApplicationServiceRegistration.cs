@@ -1,4 +1,5 @@
-﻿using Campaign.Application.Behaviours;
+﻿using Campaign.Application.Aggregates.CampaignActivity;
+using Campaign.Application.Behaviours;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,7 @@ namespace Campaign.Application
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
+            services.AddTransient<ICampaignActivity, CampaignActivity>();
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 

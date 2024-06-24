@@ -1,4 +1,4 @@
-﻿using Notification.Application.Constants.Messages;
+﻿
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,11 @@ namespace Notification.Application.Features.Notifications.Commands.CreateNotific
     {
         public CreateNotificationValidator()
         {
-            RuleFor(x => x.CustomerId)
-                .NotEqual(Guid.Empty).WithMessage(NotificationMessages.CustomerRequired);
+            RuleFor(x => x.TargetId)
+                .NotEqual(Guid.Empty);
+
+            RuleFor(x => x.Contents)
+                .NotEmpty();
         }
     }
 }

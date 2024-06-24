@@ -12,6 +12,10 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Campaign.API.Extensions;
+using Campaign.Infrastructure.Services.Http;
+using System.Configuration;
+using Campaign.Infrastructure.Services.Http.CustomerApi;
+using Campaign.Infrastructure.Services.Http.NotificationApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +24,9 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddHttpClient();
+builder.Services.Configure<CustomerApiSettings>(builder.Configuration.GetSection("CustomerApi"));
+builder.Services.Configure<NotificationApiSettings>(builder.Configuration.GetSection("NotificationApi"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

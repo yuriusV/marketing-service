@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 using Notification.Infrastructure;
 using Notification.Application;
 using Microsoft.OpenApi.Models;
@@ -8,7 +6,6 @@ using Serilog;
 using Common.Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
-using MassTransit;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,20 +14,8 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.Configure<FileSettings>(builder.Configuration.GetSection("FileSettings"));
 
-builder.Services.AddMassTransit(conf =>
-{
-    conf.UsingRabbitMq((ctx, cfg) =>
-    {
-        cfg.Host(builder.Configuration["EventBusSettings:HostAddress"]!);
-    });
-});
-builder.Services.Configure<MassTransitHostOptions>(conf =>
-{
-    conf.WaitUntilStarted = true;
-    conf.StartTimeout = TimeSpan.FromSeconds(30);
-    conf.StopTimeout = TimeSpan.FromMinutes(1);
-});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(s =>

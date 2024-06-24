@@ -1,15 +1,16 @@
 ﻿using Campaign.Application.Contracts.Persistence;
+using Campaign.Application.Contracts.Services;
+using Campaign.Application.Contracts.Services.CustomersService;
+using Campaign.Application.Contracts.Services.NotificationsService;
 using Campaign.Infrastructure.Persistence;
 using Campaign.Infrastructure.Repositories;
+using Campaign.Infrastructure.Services;
+using Campaign.Infrastructure.Services.Http.CustomerApi;
+using Campaign.Infrastructure.Services.Http.NotificationApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Campaign.Infrastructure
 {
@@ -29,15 +30,13 @@ namespace Campaign.Infrastructure
             services.AddQuartz(q =>
             {
                 q.UseMicrosoftDependencyInjectionJobFactory();
-                q.UsePersistentStore(options =>
-                {
-                    options.UsePostgres(configuration.GetConnectionString("CampaignScheduleConnectionString"));
-                    //options.UseJsonSerializer();
-                    options.UseClustering();
-                });
             });
 
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+            services.AddSingleton<ISchedulerService, SchedulerService>();
+            services.AddTransient<ICustomersService, CustomersService>();
+            services.AddTransient<INotificationsService, NotificationService>();
+
 
             return services;
         }

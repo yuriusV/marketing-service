@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Campaign.Application.Contracts.Persistence;
+using Campaign.Application.Contracts.Services;
 using Campaign.Application.Features.Campaigns.Queries.GetCampaigns;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -9,12 +10,18 @@ namespace Campaign.Application.Features.Campaigns.Commands.DeleteCampaign
     public class DeleteCampaignHandler : IRequestHandler<DeleteCampaignCommand, CampaignDto>
     {
         private readonly ICampaignRepository _campaignRepository;
+        private readonly ISchedulerService _schedulerService;
         private readonly IMapper _mapper;
         private readonly ILogger<DeleteCampaignHandler> _logger;
 
-        public DeleteCampaignHandler(ICampaignRepository campaignRepository, IMapper mapper, ILogger<DeleteCampaignHandler> logger)
+        public DeleteCampaignHandler(
+            ICampaignRepository campaignRepository,
+            ISchedulerService schedulerService, 
+            IMapper mapper,
+            ILogger<DeleteCampaignHandler> logger)
         {
             _campaignRepository = campaignRepository;
+            _schedulerService = schedulerService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -28,7 +35,8 @@ namespace Campaign.Application.Features.Campaigns.Commands.DeleteCampaign
                 return new CampaignDto { Id = request.Id };
             }
 
-            await _campaignRepository.DeleteAsync(new Domain.Entities.Campaign(campaign.Id));
+            await _campaignRepository.DeleteAsync(campaign);
+            await _schedulerService.DeleteCampaignAsync(campaign.Id);
             return _mapper.Map<CampaignDto>(campaign)!;
         }
     }

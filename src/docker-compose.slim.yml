@@ -1,0 +1,116 @@
+version: '3.4'
+
+services:
+  customerdb:
+    image: postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=CustomerDb
+    restart: always
+    ports:
+        - "5432:5432"
+    volumes:
+      - postgres_data_customer:/var/lib/postgresql/data/
+    networks:
+      - common   
+
+  customer.api:
+    image: ${DOCKER_REGISTRY-}customerapi
+    build:
+      context: .
+      dockerfile: Services/Customer/Customer.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=customerdb;Port=5432;Database=CustomerDb;User Id=admin;Password=admin1234;"
+      - "ElasticConfiguration:Uri=http://elasticsearch:9200"
+    depends_on:
+      - customerdb
+    ports:
+      - "7000:8080"
+    networks:
+      - common
+
+  webstatus:
+    image: ${DOCKER_REGISTRY-}webstatus
+    build:
+      context: .
+      dockerfile: WebApps/WebStatus/Dockerfile
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - HealthChecksUI__HealthChecks__0__Name=Customer Health Check
+        - HealthChecksUI__HealthChecks__0__Uri=http://customer.api/hc
+        - HealthChecksUI__HealthChecks__1__Name=Campaign Health Check
+        - HealthChecksUI__HealthChecks__1__Uri=http://campaign.api/hc
+        - HealthChecksUI__HealthChecks__2__Name=Notification Health Check
+        - HealthChecksUI__HealthChecks__2__Uri=http://notification.api/hc
+    ports:
+        - "8007:8080"
+    networks:
+      - common
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=yuravashchenko15@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin1234
+    restart: always
+    ports:
+        - "5050:80"
+    volumes:
+      - pgadmin_data:/root/.pgadmin
+    networks:
+      - common
+
+  campaigndb:
+    image: postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin1234
+      - POSTGRES_DB=CampaignDb
+    restart: always
+    ports:
+        - "5433:5432"
+    volumes:
+      - postgres_data_campaign:/var/lib/postgresql/data/
+    networks:
+      - common
+
+  campaign.api:
+    image: ${DOCKER_REGISTRY-}campaignapi
+    build:
+      context: .
+      dockerfile: Services/Campaign/Campaign.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=campaigndb;Port=5432;Database=CampaignDb;User Id=admin;Password=admin1234;"
+      - "ElasticConfiguration:Uri=http://elasticsearch:9200"
+    depends_on:
+      - campaigndb
+    ports:
+      - "7001:8080"
+    networks:
+      - common
+
+  notification.api:
+    image: ${DOCKER_REGISTRY-}notificationapi
+    build:
+      context: .
+      dockerfile: Services/Notification/Notification.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ElasticConfiguration:Uri=http://elasticsearch:9200"
+    ports:
+      - "7002:8080"
+    volumes:
+      - notifications:/home
+
+volumes:
+  postgres_data_customer:
+  postgres_data_campaign:
+  pgadmin_data:
+
+
+networks:
+  common:
+    driver: bridge

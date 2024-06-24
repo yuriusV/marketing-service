@@ -13,6 +13,6 @@ namespace Customer.Application.Contracts.Persistence
         Task<bool> AnyAsync(Expression<Func<Domain.Entities.Customer, bool>> predicate);
 
 
-        Task<IReadOnlyList<Domain.Entities.Customer>> FindAsync(CustomerDto properties);
+        Task<IReadOnlyList<Domain.Entities.Customer>> FindAsync(CustomerQuery properties);
     }
 }

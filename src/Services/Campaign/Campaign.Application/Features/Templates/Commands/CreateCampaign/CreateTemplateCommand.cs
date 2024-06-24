@@ -7,6 +7,6 @@ namespace Campaign.Application.Features.Templates.Commands.CreateTemplate
     public class CreateTemplateCommand : IRequest<TemplateDto>
     {
         public string Name { get; set; }
-        public byte[] Contents { get; set; }
+        public string Contents { get; set; }
     }
 }

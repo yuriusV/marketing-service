@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Campaign.Application.Aggregates.CampaignActivity;
+using Campaign.Application.Contracts.Persistence;
+using Campaign.Application.Contracts.Services.CustomersService;
+using Campaign.Application.Contracts.Services.NotificationsService;
+using Microsoft.Extensions.DependencyInjection;
 using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Campaign.Infrastructure.Services.Quartz;
 
@@ -21,11 +20,15 @@ public class DailyJob : IJob
     {
         using (var scope = _serviceProvider.CreateScope())
         {
-            //    var myService = scope.ServiceProvider.GetRequiredService<IMyService>();
+            var campaignRepository = scope.ServiceProvider.GetRequiredService<ICampaignRepository>();
+            var templateRepository = scope.ServiceProvider.GetRequiredService<ITemplateRepository>();
 
-            //    var data = await myService.GetDataAsync();
-            //    var result = myService.PerformLogic(data);
-            //    await myService.CallAnotherService(result);
+            var customersService = scope.ServiceProvider.GetRequiredService<ICustomersService>();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationsService>();
+            var campaignActivity = scope.ServiceProvider.GetRequiredService<ICampaignActivity>();
+
+            var taskId = context.JobDetail.JobDataMap.GetString("TaskId");
+            await campaignActivity.CreateAsync(Guid.Parse(taskId));
         }
 }
 }

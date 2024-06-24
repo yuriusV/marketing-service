@@ -28,11 +28,11 @@ namespace Customer.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
+        [HttpPost("customer-searches")]
         [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> GetCustomers([FromQuery]CustomerQuery query)
+        public async Task<ActionResult> SearchCustomers([FromBody]CustomerQuery query)
         {
             var result = await _mediator.Send(query);
             return Ok(result);

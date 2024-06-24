@@ -1,17 +1,11 @@
 ﻿using Notification.Application.Contracts.Persistence;
-using Notification.Application.Features.Notifications.Queries.GetNotification;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Notification.Application.Features.Notifications.Commands.CreateNotification
 {
-    public class CreateNotificationHandler : IRequestHandler<CreateNotificationCommand, Guid>
+    public class CreateNotificationHandler : IRequestHandler<CreateNotificationCommand, CreateNotificationResponse>
     {
         private readonly INotificationRepository _NotificationRepository;
         private readonly IMapper _mapper;
@@ -24,11 +18,11 @@ namespace Notification.Application.Features.Notifications.Commands.CreateNotific
             _logger = logger;
         }
 
-        public async Task<Guid> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
+        public async Task<CreateNotificationResponse> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
         {
             var NotificationEntity = _mapper.Map<Domain.Entities.Notification>(request);
-            var newNotification = await _NotificationRepository.AddAsync(NotificationEntity!);
-            return newNotification.Id;
+            var newNotification = await _NotificationRepository.CreateNotificationAsync(NotificationEntity!);
+            return new CreateNotificationResponse { StreamItemId = newNotification };
         }
     }
 }
