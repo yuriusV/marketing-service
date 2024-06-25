@@ -1,4 +1,5 @@
 ﻿using Campaign.Application.Contracts.Services;
+using Campaign.Domain.Entities;
 using Campaign.Infrastructure.Services.Quartz;
 using Microsoft.Extensions.Logging;
 using Quartz;
@@ -18,7 +19,7 @@ public class SchedulerService: ISchedulerService
 
     public async Task AddCampaignAsync(Domain.Entities.Campaign campaign)
     {
-        logger.LogInformation("Scheduling campaign");
+        logger.LogInformation("Scheduling campaign {id}", campaign.Id);
         var scheduler = await _schedulerFactory.GetScheduler();
 
         var job = JobBuilder.Create<DailyJob>()
@@ -36,6 +37,7 @@ public class SchedulerService: ISchedulerService
 
     public async Task UpdateCampaignAsync(Domain.Entities.Campaign campaign)
     {
+        logger.LogInformation("Updating schedule of campaign {id}", campaign.Id);
         Guid id = campaign.Id;
 
         var scheduler = await _schedulerFactory.GetScheduler();
@@ -58,6 +60,8 @@ public class SchedulerService: ISchedulerService
 
     public async Task DeleteCampaignAsync(Guid id)
     {
+        logger.LogInformation("Deleting schedule of campaign {id}", id);
+
         var scheduler = await _schedulerFactory.GetScheduler();
         var jobKey = new JobKey(id.ToString(), "Campaigns");
 

@@ -8,7 +8,7 @@ namespace Campaign.Infrastructure.Services.Http.NotificationApi;
 
 public class NotificationService : INotificationsService
 {
-    private const string Notifications = "/api/v1/Notifications";
+    private const string NotificationsEndpoint = "/api/v1/Notifications";
     private readonly HttpClient _client;
     private readonly ILogger<NotificationService> logger;
     private readonly string _baseUrl;
@@ -29,7 +29,7 @@ public class NotificationService : INotificationsService
     {
         var json = JsonSerializer.Serialize(notification);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync(Notifications, content);
+        var response = await _client.PostAsync(NotificationsEndpoint, content);
 
         if (response.IsSuccessStatusCode)
         {
@@ -42,7 +42,7 @@ public class NotificationService : INotificationsService
         }
         else
         {
-            logger.LogError("Url: {Url}, Status: {StatusCode}, Response: {Response}", Notifications, response.StatusCode, response.ReasonPhrase);
+            logger.LogError("Url: {Url}, Status: {StatusCode}, Response: {Response}", NotificationsEndpoint, response.StatusCode, response.ReasonPhrase);
             throw new HttpRequestException($"POST request failed with status code: {response.StatusCode}");
         }
     }

@@ -4,6 +4,8 @@ namespace Campaign.Application.Features.Campaigns.Commands.CreateCampaign;
 
 public class CreateCampaignValidator : AbstractValidator<CreateCampaignCommand>
 {
+    private const int MaxNameLength = 256;
+
     public CreateCampaignValidator()
     {
         RuleFor(x => x.TemplateId)
@@ -14,7 +16,7 @@ public class CreateCampaignValidator : AbstractValidator<CreateCampaignCommand>
 
         RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(256);
+            .MaximumLength(MaxNameLength);
 
         RuleFor(x => x.Priority)
             .NotEmpty().Must(x => x > 0);

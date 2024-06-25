@@ -39,7 +39,6 @@ app.MigrateDatabase<CustomerContext>((context, services) =>
 });
 
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -49,11 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.MapHealthChecks("/hc", new HealthCheckOptions
 {
     Predicate = _ => true,

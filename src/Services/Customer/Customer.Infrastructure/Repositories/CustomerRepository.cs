@@ -20,8 +20,18 @@ public class CustomerRepository : RepositoryBase<Domain.Entities.Customer>, ICus
 
     public Task<IReadOnlyList<Domain.Entities.Customer>> FindAsync(CustomerQuery properties)
     {
-        var parameter = Expression.Parameter(typeof(Domain.Entities.Customer), "x");
+        properties = properties ?? throw new ArgumentNullException(nameof(properties));
 
+        var parameter = Expression.Parameter(typeof(Domain.Entities.Customer), "x");
+        Expression filterExpression = BuildSearchExpression(properties, parameter);
+
+        var lambda = Expression.Lambda<Func<Domain.Entities.Customer, bool>>(filterExpression, parameter);
+
+        return GetAsync(lambda);
+    }
+
+    private static Expression BuildSearchExpression(CustomerQuery properties, ParameterExpression parameter)
+    {
         Expression filterExpression = Expression.Constant(true);
 
         // TODO: make parsing safier, add validation
@@ -67,9 +77,7 @@ public class CustomerRepository : RepositoryBase<Domain.Entities.Customer>, ICus
                 GetExpression(nameof(properties.Deposit), properties.Deposit.Function, decimal.Parse(properties.Deposit.Value), parameter));
         }
 
-        var lambda = Expression.Lambda<Func<Domain.Entities.Customer, bool>>(filterExpression, parameter);
-
-        return GetAsync(lambda);
+        return filterExpression;
     }
 
     private static BinaryExpression GetExpression(string column, string filter, object value, ParameterExpression? parameter)

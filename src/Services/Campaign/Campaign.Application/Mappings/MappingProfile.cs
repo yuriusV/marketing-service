@@ -11,6 +11,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        // TODO: improve time parsing logic
         CreateMap<CreateCampaignCommand, Domain.Entities.Campaign>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Query, opt => opt.MapFrom(src => src.Query))

@@ -9,8 +9,8 @@ namespace Campaign.Infrastructure.Services.Http.CustomerApi;
 
 public class CustomersService : ICustomersService
 {
-    private const string GetCustomers = "/api/v1/CustomersSearches";
-
+    private const string FindCustomersEndpoint = "/api/v1/CustomersSearches";
+    private const string MediaType = "application/json";
     private readonly HttpClient _client;
     private readonly ILogger<CustomersService> logger;
     private readonly string _baseUrl;
@@ -26,8 +26,8 @@ public class CustomersService : ICustomersService
     public async Task<IReadOnlyList<CustomerDto>> GetCustomersAsync(CustomerQuery query)
     {
         var json = JsonSerializer.Serialize(query);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync(GetCustomers, content);
+        var content = new StringContent(json, Encoding.UTF8, MediaType);
+        var response = await _client.PostAsync(FindCustomersEndpoint, content);
 
         if (response.IsSuccessStatusCode)
         {
@@ -41,7 +41,7 @@ public class CustomersService : ICustomersService
         }
         else
         {
-            logger.LogError("Url: {Url}, Status: {StatusCode}, Response: {Response}", GetCustomers, response.StatusCode, response.ReasonPhrase);
+            logger.LogError("Url: {Url}, Status: {StatusCode}, Response: {Response}", FindCustomersEndpoint, response.StatusCode, response.ReasonPhrase);
             throw new HttpRequestException($"POST request failed with status code: {response.StatusCode}");
         }
     }

@@ -63,14 +63,19 @@ public class CampaignActivityService: ICampaignActivityService
         logger.LogInformation($"Notifications are sent");
     }
 
-    private async Task<IReadOnlyList<CustomerDto>> FilterApplicableCustomersAsync(IReadOnlyList<Domain.Entities.Campaign> allCampaigns, Domain.Entities.Campaign? currentCampaign, IReadOnlyList<CustomerDto> applicableCustomers)
+    private async Task<IReadOnlyList<CustomerDto>> FilterApplicableCustomersAsync(
+        IReadOnlyList<Domain.Entities.Campaign> allCampaigns,
+        Domain.Entities.Campaign? currentCampaign,
+        IReadOnlyList<CustomerDto> applicableCustomers)
     {
         var applicableCustomersIds = applicableCustomers.Select(x => x.Id).ToArray();
         logger.LogInformation("Received {customers} that match the campaign query", applicableCustomersIds);
         var todaySentCustomers = await campaignActivityRepository.GetAsync(
-            x => applicableCustomersIds.Contains(x.TargetId) && x.CreatedDate.Date == dateTimeService.DateTime.Date);
+            x => applicableCustomersIds.Contains(x.TargetId)
+                && x.CreatedDate.Date == dateTimeService.DateTime.Date);
 
-        applicableCustomers = applicableCustomers.Where(c => !todaySentCustomers.Any(t => t.TargetId == c.Id)).ToList();
+        applicableCustomers = applicableCustomers.Where(
+            c => !todaySentCustomers.Any(t => t.TargetId == c.Id)).ToList();
         applicableCustomers = applicableCustomers.Where(
             c => !allCampaigns.Any(x => x.DoesCustomerCorrespond(c) && x.IsMorePriorityThan(currentCampaign)))
             .ToList();

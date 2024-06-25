@@ -44,8 +44,6 @@ app.MigrateDatabase<CampaignContext>((context, services) =>
 });
 
 
-// Configure the HTTP request pipeline.
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

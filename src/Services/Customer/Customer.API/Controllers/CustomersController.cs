@@ -25,14 +25,4 @@ public class CustomersController : ControllerBase
         var result = await _mediator.Send(command);
         return Ok(result);
     }
-
-    [HttpPost("customer-searches")]
-    [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesDefaultResponseType]
-    public async Task<ActionResult> SearchCustomers([FromBody]CustomerQuery query)
-    {
-        var result = await _mediator.Send(query);
-        return Ok(result);
-    }
 }
