@@ -39,11 +39,11 @@ services:
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
         - HealthChecksUI__HealthChecks__0__Name=Customer Health Check
-        - HealthChecksUI__HealthChecks__0__Uri=http://customer.api/hc
+        - HealthChecksUI__HealthChecks__0__Uri=http://customer.api:8080/hc
         - HealthChecksUI__HealthChecks__1__Name=Campaign Health Check
-        - HealthChecksUI__HealthChecks__1__Uri=http://campaign.api/hc
+        - HealthChecksUI__HealthChecks__1__Uri=http://campaign.api:8080/hc
         - HealthChecksUI__HealthChecks__2__Name=Notification Health Check
-        - HealthChecksUI__HealthChecks__2__Uri=http://notification.api/hc
+        - HealthChecksUI__HealthChecks__2__Uri=http://notification.api:8080/hc
     ports:
         - "8007:8080"
     networks:
@@ -102,6 +102,8 @@ services:
       - "ElasticConfiguration:Uri=http://elasticsearch:9200"
     ports:
       - "7002:8080"
+    networks:
+      - common
     volumes:
       - notifications:/tmp
 

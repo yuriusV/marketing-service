@@ -26,6 +26,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddScoped<ICampaignRepository, CampaignRepository>();
         services.AddScoped<ITemplateRepository, TemplateRepository>();
+        services.AddScoped<ICampaignActivityRepository, CampaignActivityRepository>();
 
         services.AddQuartz(q =>
         {
@@ -35,6 +36,7 @@ public static class InfrastructureServiceRegistration
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
         services.AddSingleton<ISchedulerService, SchedulerService>();
         services.AddTransient<ICustomersService, CustomersService>();
+        services.AddTransient<IDateTimeService, DateTimeService>();
         services.AddTransient<INotificationsService, NotificationService>();
 
 

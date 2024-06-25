@@ -18,10 +18,10 @@ public class CustomerContext : DbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedDate = DateTime.Now;
+                    entry.Entity.CreatedDate = DateTime.UtcNow;
                     break;
                 case EntityState.Modified:
-                    entry.Entity.LastModifiedDate = DateTime.Now;
+                    entry.Entity.LastModifiedDate = DateTime.UtcNow;
                     break;
             }
         }

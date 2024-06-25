@@ -1,20 +1,10 @@
 ﻿using Campaign.Domain.Common;
 using Campaign.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Newtonsoft.Json;
 
 namespace Campaign.Infrastructure.Persistence;
-
-public class CampaignContextFactory : IDesignTimeDbContextFactory<CampaignContext>
-{
-    public CampaignContext CreateDbContext(string[] args)
-    {
-        var optionsBuilder = new DbContextOptionsBuilder<CampaignContext>();
-        optionsBuilder.UseNpgsql();
-
-        return new CampaignContext(optionsBuilder.Options);
-    }
-}
 
 public class CampaignContext : DbContext
 {
@@ -35,10 +25,10 @@ public class CampaignContext : DbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedDate = DateTime.Now;
+                    entry.Entity.CreatedDate = DateTime.UtcNow;
                     break;
                 case EntityState.Modified:
-                    entry.Entity.LastModifiedDate = DateTime.Now;
+                    entry.Entity.LastModifiedDate = DateTime.UtcNow;
                     break;
             }
         }
@@ -47,6 +37,10 @@ public class CampaignContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var jsonConverter = new ValueConverter<CustomerQuery, string>(
+            v => JsonConvert.SerializeObject(v),
+            v => JsonConvert.DeserializeObject<CustomerQuery>(v));
+
         modelBuilder.Entity<Domain.Entities.Campaign>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -58,7 +52,8 @@ public class CampaignContext : DbContext
                   .IsRequired();
 
             entity.Property(e => e.Query)
-                  .HasColumnType("jsonb");
+                .HasConversion(jsonConverter)
+                .HasColumnType("jsonb");
 
             entity.Property(e => e.Time)
                   .HasColumnType("time");

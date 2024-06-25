@@ -1,8 +1,6 @@
 ﻿using Campaign.Application.Aggregates.CampaignActivity;
-using Campaign.Application.Contracts.Persistence;
-using Campaign.Application.Contracts.Services.CustomersService;
-using Campaign.Application.Contracts.Services.NotificationsService;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace Campaign.Infrastructure.Services.Quartz;
@@ -18,17 +16,12 @@ public class DailyJob : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
-        using (var scope = _serviceProvider.CreateScope())
-        {
-            var campaignRepository = scope.ServiceProvider.GetRequiredService<ICampaignRepository>();
-            var templateRepository = scope.ServiceProvider.GetRequiredService<ITemplateRepository>();
+        using var scope = _serviceProvider.CreateScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<DailyJob>>();
+        var taskId = context.JobDetail.Key.Name;
+        logger.LogInformation($"Executing daily job: {taskId}");
+        var campaignActivity = scope.ServiceProvider.GetRequiredService<ICampaignActivityService>();
 
-            var customersService = scope.ServiceProvider.GetRequiredService<ICustomersService>();
-            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationsService>();
-            var campaignActivity = scope.ServiceProvider.GetRequiredService<ICampaignActivity>();
-
-            var taskId = context.JobDetail.JobDataMap.GetString("TaskId");
-            await campaignActivity.CreateAsync(Guid.Parse(taskId));
-        }
-}
+        await campaignActivity.CreateAsync(Guid.Parse(taskId));
+    }
 }

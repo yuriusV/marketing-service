@@ -15,7 +15,7 @@ public class Campaign : EntityBase
 
     public string Name { get; set; }
 
-    public string Query { get; set; }
+    public CustomerQuery Query { get; set; }
 
     public TimeSpan Time { get; set; }
 
@@ -24,4 +24,15 @@ public class Campaign : EntityBase
     public Guid TemplateId { get; set; }
 
     public Template Template { get; set; }
+
+    public bool DoesCustomerCorrespond(CustomerDto customer)
+    {
+        // TODO: add logic to check does customer correspond to Query
+        return true;
+    }
+
+    public bool IsMorePriorityThan(Campaign another)
+    {
+        return Priority < another.Priority;
+    }
 }

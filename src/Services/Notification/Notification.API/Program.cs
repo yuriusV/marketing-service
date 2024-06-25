@@ -1,20 +1,20 @@
 using Notification.Infrastructure;
 using Notification.Application;
 using Microsoft.OpenApi.Models;
-using Notification.Infrastructure.Repositories;
 using Serilog;
 using Common.Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
+using FluentValidation.AspNetCore;
+using Notification.API.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
-
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.Configure<FileSettings>(builder.Configuration.GetSection("FileSettings"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -35,6 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Notification.API v1"));
+    app.UseMiddleware<ErrorsLoggingMiddleware>();
 }
 
 //app.UseHttpsRedirection();

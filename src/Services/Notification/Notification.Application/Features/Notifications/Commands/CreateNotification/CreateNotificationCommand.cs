@@ -1,11 +1,9 @@
 ﻿
 using MediatR;
+using Notification.Application.Features.Notifications.Queries.GetNotifications;
 
 namespace Notification.Application.Features.Notifications.Commands.CreateNotification;
 
-public class CreateNotificationCommand : IRequest<CreateNotificationResponse>
+public class CreateNotificationCommand : NotificationDto, IRequest<CreateNotificationResponse>
 {
-    public Guid TargetId { get; set; }
-
-    public string Contents { get; set; }
 }

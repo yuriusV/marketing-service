@@ -24,64 +24,65 @@ public class CustomerRepository : RepositoryBase<Domain.Entities.Customer>, ICus
 
         Expression filterExpression = Expression.Constant(true);
 
-        BinaryExpression GetExpression(string column, string filter, object value)
-        {
-            var prop = Expression.Property(parameter, column);
-            var constant = Expression.Constant(value);
-
-            return filter switch
-            {
-                "=" => Expression.Equal(prop, constant),
-                ">" => Expression.GreaterThan(prop, constant),
-                "<" => Expression.LessThan(prop, constant),
-                _ => throw new ArgumentException("Unsupported function name")
-            };
-        }
-
+        // TODO: make parsing safier, add validation
         if (properties.Id != null)
         {
             filterExpression = Expression.AndAlso(
                 filterExpression,
-                GetExpression(nameof(properties.Id), properties.Id.Function, Guid.Parse(properties.Id.Value)));
+                GetExpression(nameof(properties.Id), properties.Id.Function, Guid.Parse(properties.Id.Value), parameter));
         }
 
         if (properties.IsMale != null)
         {
             filterExpression = Expression.AndAlso(
                 filterExpression,
-                GetExpression(nameof(properties.IsMale), properties.IsMale.Function, bool.Parse(properties.IsMale.Value)));
+                GetExpression(nameof(properties.IsMale), properties.IsMale.Function, bool.Parse(properties.IsMale.Value), parameter));
         }
 
         if (properties.IsNewCustomer != null)
         {
             filterExpression = Expression.AndAlso(
                 filterExpression,
-                GetExpression(nameof(properties.IsNewCustomer), properties.IsNewCustomer.Function, bool.Parse(properties.IsNewCustomer.Value)));
+                GetExpression(nameof(properties.IsNewCustomer), properties.IsNewCustomer.Function, bool.Parse(properties.IsNewCustomer.Value), parameter));
         }
 
         if (properties.City != null)
         {
             filterExpression = Expression.AndAlso(
                 filterExpression,
-                GetExpression(nameof(properties.City), properties.City.Function, properties.City.Value));
+                GetExpression(nameof(properties.City), properties.City.Function, properties.City.Value, parameter));
         }
 
         if (properties.Birthdate != null)
         {
             filterExpression = Expression.AndAlso(
                 filterExpression,
-                GetExpression(nameof(properties.Birthdate), properties.Birthdate.Function, DateTime.Parse(properties.Birthdate.Value)));
+                GetExpression(nameof(properties.Birthdate), properties.Birthdate.Function, DateTime.Parse(properties.Birthdate.Value), parameter));
         }
 
         if (properties.Deposit != null)
         {
             filterExpression = Expression.AndAlso(
                 filterExpression,
-                GetExpression(nameof(properties.Deposit), properties.Deposit.Function, decimal.Parse(properties.Deposit.Value)));
+                GetExpression(nameof(properties.Deposit), properties.Deposit.Function, decimal.Parse(properties.Deposit.Value), parameter));
         }
 
         var lambda = Expression.Lambda<Func<Domain.Entities.Customer, bool>>(filterExpression, parameter);
 
         return GetAsync(lambda);
+    }
+
+    private static BinaryExpression GetExpression(string column, string filter, object value, ParameterExpression? parameter)
+    {
+        var prop = Expression.Property(parameter, column);
+        var constant = Expression.Constant(value);
+
+        return filter switch
+        {
+            "=" => Expression.Equal(prop, constant),
+            ">" => Expression.GreaterThan(prop, constant),
+            "<" => Expression.LessThan(prop, constant),
+            _ => throw new ArgumentException("Unsupported function name")
+        };
     }
 }

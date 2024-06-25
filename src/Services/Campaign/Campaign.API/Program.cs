@@ -9,6 +9,8 @@ using HealthChecks.UI.Client;
 using Campaign.API.Extensions;
 using Campaign.Infrastructure.Services.Http.CustomerApi;
 using Campaign.Infrastructure.Services.Http.NotificationApi;
+using Campaign.API.Middlewares;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,7 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddHttpClient();
 builder.Services.Configure<CustomerApiSettings>(builder.Configuration.GetSection("CustomerApi"));
 builder.Services.Configure<NotificationApiSettings>(builder.Configuration.GetSection("NotificationApi"));
@@ -42,14 +45,15 @@ app.MigrateDatabase<CampaignContext>((context, services) =>
 
 
 // Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Campaign.API v1"));
+    app.UseMiddleware<ErrorsLoggingMiddleware>();
 }
 
-//app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();

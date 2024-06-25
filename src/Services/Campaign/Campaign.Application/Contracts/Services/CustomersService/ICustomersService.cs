@@ -1,6 +1,8 @@
-﻿namespace Campaign.Application.Contracts.Services.CustomersService;
+﻿using Campaign.Domain.Entities;
+
+namespace Campaign.Application.Contracts.Services.CustomersService;
 
 public interface ICustomersService
 {
-    public Task<IReadOnlyList<CustomerDto>> GetCustomersAsync(CustomersQuery query);
+    public Task<IReadOnlyList<CustomerDto>> GetCustomersAsync(CustomerQuery query);
 }

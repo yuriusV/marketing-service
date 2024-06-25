@@ -1,6 +1,6 @@
 ﻿namespace Campaign.Application.Aggregates.CampaignActivity;
 
-public interface ICampaignActivity
+public interface ICampaignActivityService
 {
     Task CreateAsync(Guid campaignId);
 }

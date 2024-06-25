@@ -1,4 +1,4 @@
-﻿namespace Campaign.Application.Contracts.Services.CustomersService;
+﻿namespace Campaign.Domain.Entities;
 
 public class CustomerDto
 {
