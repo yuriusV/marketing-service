@@ -61,6 +61,7 @@ Overall:
 
 ### Tests
 Added a few tests for critical parts to demonstrate the unit testing approach. Planning to exetend test coverage
+Tests use FluentAssertions, NUnit, NSubstitute, AutoFixture
 
 ## Technical details
 
@@ -93,7 +94,7 @@ Planning to add NBomber for load testing
 Full run
 docker-compose -p marketingfull -f docker-compose.yml -f docker-compose.override.yml up -d --build
 
-Minified, for application only
+Minified
 docker-compose -p marketingslim -f docker-compose.slim.yml up -d --build
 
 ### APIs
