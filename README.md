@@ -46,15 +46,60 @@ To recap, the process includes:
 - Internal domain logic.
 - Parallel notification sending.
 
+### Design approaches
+
+.NET services:
+- REST API principles (for endpoints), CRUD operations (for stored entities)
+- DDD (to encode domain logic), CQRS and clean architecture (to separate logic)
+- Repositories, aggregates
+- unit testing
+
+Overall:
+- microservices approach
+- healthchecking
+- observability tools
+
+### Tests
+Added a few tests for critical parts to demonstrate the unit testing approach. Planning to exetend test coverage
 
 ## Technical details
 
+### Technologies
+- .NET core
+- Docker
+- Postgres
+- Elasticsearch & Kibana
+- Terraform for GCP
+- webcheck
+- pgadmin
+
+In .NET:
+- ASP.NET
+- Mediatr
+- FluentValidation
+- Automapper
+- Swashbuckle
+- EF Core
+- FluentAssertions
+- AutoFixture
+- NSubstitute
+
+
+Planning to add NBomber for load testing
+
+
 ### Run in docker
 
+Full run
 docker-compose -p marketingfull -f docker-compose.yml -f docker-compose.override.yml up -d --build
 
+Minified, for application only
 docker-compose -p marketingslim -f docker-compose.slim.yml up -d --build
 
-### Add migrations
+### APIs
 
-dotnet ef migrations add MigrationName
+![Diagram](docs/campaign.png)
+
+![Diagram](docs/customers.png)
+
+![Diagram](docs/notification.png)

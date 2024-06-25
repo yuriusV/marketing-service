@@ -15,7 +15,7 @@ public static class InfrastructureServiceRegistration
         services.AddSingleton<INotificationRepository, NotificationRepository>();
         
         services.AddScoped<IDateTimeService, DateTimeService>();
-        services.AddScoped<IGuidProvider, GuidProvider>();
+        services.AddSingleton<IGuidProvider, GuidProvider>();
 
         return services;
     }
